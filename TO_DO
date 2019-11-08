@@ -2,4 +2,5 @@
 2. Get air traffic data
 3. Get other data which can be related to air pollution
 4. Train VAR models for forecasting
-5. Set up deployment infrastructure
+5. Set up deployment infrastructure [DONE]
+6. Before publishing or final push don't forget to edit cron.sh by deleting credentials and changing ID name
