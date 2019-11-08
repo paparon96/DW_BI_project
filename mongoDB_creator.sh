@@ -4,6 +4,8 @@ docker exec -it some-mongo bash
 
 mongo
 
+use weather
+
 show collections
 
-db.paris.find().pretty() 
+db.paris.find().pretty()
