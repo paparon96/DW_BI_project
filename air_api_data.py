@@ -8,7 +8,7 @@ from utils.helper_functions import api_call, mongo_insertion
 
 # Set parameters
 token = "03df9f2d4870930cf65e4acb042372759854c2a2"
-city = "beijing"
+city = "budapest"
 
 # Get API content
 temp = api_call(city,token)

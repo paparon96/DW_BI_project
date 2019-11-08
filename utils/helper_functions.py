@@ -5,7 +5,7 @@ import pymongo
 
 def api_call(city,token):
     token = "03df9f2d4870930cf65e4acb042372759854c2a2"
-    city = "beijing"
+    #city = "beijing"
     url= "https://api.waqi.info/feed/{0}/?token={1}".format(city,token)
     res = requests.get(url)
     temp = json.loads(res.content)

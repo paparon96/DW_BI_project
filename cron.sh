@@ -1,1 +1,5 @@
-/Users/MacBook/opt/anaconda3/bin/python /Egyetem/BGSE/Studies/Trimester_1/Data_Warehousing_Business_Intelligence/Homework/Project_PART1/DW_BI_project/air_api_data.py
+/usr/bin/docker login --username 18435 --password Pap8Dok!tor &&
+/usr/bin/docker run --name mongotest -t --net host 18435/awesome &&
+/usr/bin/docker stop mongotest &&
+/usr/bin/docker rm mongotest &&
+echo "done"
