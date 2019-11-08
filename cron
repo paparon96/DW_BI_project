@@ -1,2 +1,2 @@
 MAILTO="aron.pap@barcelonagse.eu"
-39 * * * * /Egyetem/BGSE/Studies/Trimester_1/Data_Warehousing_Business_Intelligence/Homework/Project_PART1/DW_BI_project/cron.sh >/dev/null 2>&1
+17 * * * * /Egyetem/BGSE/Studies/Trimester_1/Data_Warehousing_Business_Intelligence/Homework/Project_PART1/DW_BI_project/cron.sh >/dev/null 2>&1
