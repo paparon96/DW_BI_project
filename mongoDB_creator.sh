@@ -8,4 +8,6 @@ use weather
 
 show collections
 
-db.paris.find().pretty()
+db.air_pollution.find().pretty()
+db.weather.find().pretty()
+db.traffic.find().pretty()
