@@ -13,7 +13,7 @@ from utils.helper_functions import api_call, mongo_insertion
 ##### AIR POLLUTION DATA
 # Set parameters
 token = "03df9f2d4870930cf65e4acb042372759854c2a2"
-cities = ["Paris","Beijing","Paris","Tokyo","Dortmund","Moscow","Stockholm"]
+cities = ["Paris","Beijing","Budapest","Barcelona","Tokyo","Dortmund","Moscow","Stockholm"]
 #city = "budapest"
 
 	
@@ -31,6 +31,7 @@ for city in cities:
 #pm25_data = dict.get(air_data['pm25'],'v')
 
 #print(pm25_data*2)
+		temp['city']=city
 		print(temp)
 
 # Access MongoDB and instert data

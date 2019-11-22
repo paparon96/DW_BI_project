@@ -13,7 +13,7 @@ def api_call(city,token):
 
 def mongo_insertion(temp, collection):
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-    mydb = myclient["weather"]
+    mydb = myclient["air"]
     city = mydb[collection]
 
     x = city.insert_one(temp)
