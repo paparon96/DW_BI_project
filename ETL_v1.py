@@ -114,10 +114,15 @@ for i in range(0,len(data)):
     values.append(dict.get(temp['clouds'],'all'))
 
     # Get wind
+    keys = ['speed','deg']
     temp3 = temp['wind']
-    for key in temp3:
-
+    for key in keys:
+        if key in list(temp3.keys()):
+            #print(key)
             values.append(temp3[key])
+            #print(temp3[key])
+        else:
+            values.append(0)
 
     values = np.array(values)
     values = values.reshape(1,10)
