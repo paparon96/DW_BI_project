@@ -19,8 +19,9 @@ def get_marks(start, end):
     current = start
     while current <= end:
         result.append(current)
-        current += relativedelta(hours=1)
-    return {int(m.timestamp()): m.strftime('%Y-%m-%d %H') for m in result}
+        current += relativedelta(days=1)
+    #return {int(m.timestamp()): m.strftime('%Y-%m-%d %H') for m in result}
+    return {int(m.timestamp()): m.strftime('%Y-%m-%d') for m in result}
     #return {m: m.strftime('%Y-%m-%d %H') for m in result}
 
 
@@ -245,6 +246,9 @@ print(table.head())
 MIN_TIME = min(table['time'])
 MAX_TIME = max(table['time'])
 
+# Filter dataset for given range
+table_v1 = table.copy()
+
 app = dash.Dash('Dashboards')
 
 app.layout = html.Div(className = 'layout', children = [
@@ -252,35 +256,52 @@ app.layout = html.Div(className = 'layout', children = [
     html.H4('Air pollution levels in different cities', className='subtitle'),
     html.Div(className='timeline-controls', children = [
     dcc.Checklist(id = 'country-checkbox',
-                  options = [ {'label': 'By Country', 'value': 'by_country'}]),
-    dcc.RangeSlider(
-    id='time-slider',
-    min=MIN_TIME.timestamp(),
-    max=MAX_TIME.timestamp(),
-    value=[MIN_TIME.timestamp(), MAX_TIME.timestamp()],
-    marks = get_marks(MIN_TIME, MAX_TIME)
-)
+                  options = [ {'label': 'By City', 'value': 'by_country'}]),
+    html.Div(id = 'foo'),
 ]),
-    dcc.Graph(id='timeline', figure={
-        'data': [go.Scatter(x = table.time,
-                            y = table.pm25,
-                            ids = table.city, mode = 'markers',
+    dcc.Graph(id='timeline3', figure={
+        'data': [go.Scatter(x = table_v1.time,
+                            y = table_v1.pm25,
+                            ids = table_v1.city, mode = 'markers',
                             name=city)
-                            for city,table in table.groupby('city') ],
+                            for city,table_v1 in table_v1.groupby('city') ],
         'layout': {
             'title': 'PM25 levels in different cities'
         }
 }),
+dcc.RangeSlider(
+id='time-slider',
+min=MIN_TIME.timestamp(),
+max=MAX_TIME.timestamp(),
+value=[MIN_TIME.timestamp(), MAX_TIME.timestamp()],
+marks = get_marks(MIN_TIME, MAX_TIME)
+)
+,
+html.Div(className='timeline-controls2', children = [
+dcc.Checklist(id = 'country-checkbox2',
+              options = [ {'label': 'By City', 'value': 'by_country2'}]),
+html.Div(id = 'foo2'),
+]),
+
     dcc.Graph(id='timeline2', figure={
         'data': [go.Scatter(x = table.time,
                             y = table.o3,
-                            ids = table.index,
-                             mode = 'markers')],
+                            ids = table.city,
+                             mode = 'markers',
+                             name=city2)
+                             for city2,table in table.groupby('city')],
         'layout': {
             'title': 'Ozone levels in different cities'
         }
 }),
-html.Div(id = 'foo')
+dcc.RangeSlider(
+id='time-slider2',
+min=MIN_TIME.timestamp(),
+max=MAX_TIME.timestamp(),
+value=[MIN_TIME.timestamp(), MAX_TIME.timestamp()],
+marks = get_marks(MIN_TIME, MAX_TIME)
+)
+
 ])
 
 
@@ -296,13 +317,65 @@ def timeline(boxes):
     #return 'foo' if boxes else 'bar'
     return 'foo' if boxes else 'bar'
 
-#@app.callback(
-#    Output('timeline2', 'figure'),
-#    [Input('country-checkbox', 'value'),
-#     Input('time-slider', 'value')]
-#)
-#def timeline2(boxes, time_range):
-#    print(time_range)
+
+@app.callback(
+    Output('timeline3', 'figure'),
+    [Input('country-checkbox', 'value') ,
+    Input('time-slider', 'value')
+    ]
+)
+def timeline3(boxes, time_range, table_v1 = table_v1):
+    start, finish = [datetime.fromtimestamp(t) for t in time_range]
+    filtered_df = table_v1[table_v1.time>start]
+    filtered_df = filtered_df[table_v1.time<finish]
+
+    return {
+        'data': [go.Scatter(x = filtered_df.time,
+                            y = filtered_df.pm25,
+                            ids = filtered_df.city, mode = 'markers',
+                            name=city)
+                            for city,filtered_df in filtered_df.groupby('city') ],
+        'layout': {
+            'title': 'PM25 levels in different cities'
+        }}
+
+
+@app.callback(
+    Output('foo2', 'children'),
+    [Input('country-checkbox2', 'value')]
+)
+def timeline22(boxes):
+    #print(boxes)
+    #if boxes and 'by_country' in boxes:
+        #print('foo')
+        #print(table)
+    #return 'foo' if boxes else 'bar'
+    return 'foo' if boxes else 'bar'
+
+@app.callback(
+    Output('timeline2', 'figure'),
+    [Input('country-checkbox2', 'value') ,
+    Input('time-slider2', 'value')
+    ]
+)
+def timeline2(boxes, time_range, table = table):
+    start, finish = [datetime.fromtimestamp(t) for t in time_range]
+    filtered_df2 = table[table.time>start]
+    filtered_df2 = filtered_df2[filtered_df2.time<finish]
+
+    return {
+        'data': [go.Scatter(x = filtered_df2.time,
+                            y = filtered_df2.o3,
+                            ids = filtered_df2.city,
+                             mode = 'markers',
+                             name=city)
+                             for city,table in filtered_df2.groupby('city')],
+        'layout': {
+            'title': 'Ozone levels in different cities'
+        }}
+
+
+# Testing
 
 
 app.run_server(host='0.0.0.0',debug=True,port=8050)
