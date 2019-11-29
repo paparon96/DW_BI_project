@@ -1,11 +1,14 @@
+## I. Import libraries
+
+
 import dash
 import dash_html_components as html
 import dash_core_components as dcc
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
+import chart_studio as py #added newly
 
 
-## I. Import libraries
 import pandas as pd
 #from sqlalchemy import create_engine
 #import psycopg2
@@ -113,18 +116,31 @@ print(type(air_pollution_df.time.iloc[0]))
 # WEATHER COLLECTION
 colnames = ['city', 'time','temperature','pressure',
 'humidity', 'temp_min', 'temp_max', 'cloud',
-'wind_speed','wind_degree']
+'wind_speed','wind_degree','longitude','latitude']
 
 a=my_collection['weather']
+
+
 data = list(a.find())
+
+lon_list=[]
+lat_list=[]
+
+
 for i in range(0,len(data)):
     temp = data[i]
     print(temp)
 
+    values = []
+
+    lon=temp['coord']['lon']
+    lon_list.append(lon)
+    lat=temp['coord']['lat']
+    lat_list.append(lat)
+
     temp2 = temp['main']
     print(temp2)
 
-    values = []
 
     # Get city
 
@@ -159,8 +175,13 @@ for i in range(0,len(data)):
         else:
             values.append(0)
 
+    # Add coordinate values
+    values.append(temp['coord']['lon'])
+    values.append(temp['coord']['lat'])
+
+
     values = np.array(values)
-    values = values.reshape(1,10)
+    values = values.reshape(1,12)
     if i==0:
         weather_df = pd.DataFrame(values)
     else:
@@ -300,7 +321,21 @@ min=MIN_TIME.timestamp(),
 max=MAX_TIME.timestamp(),
 value=[MIN_TIME.timestamp(), MAX_TIME.timestamp()],
 marks = get_marks(MIN_TIME, MAX_TIME)
-)
+),
+
+dcc.Graph(
+           id='geo',
+           figure={
+               'data': [go.Scattergeo(
+                       lon = table['longitude'],
+                       lat = table['latitude'],
+                       text = table['city'],
+                       #mode = 'markers'),
+                       marker = dict(size=[float(i)*2 for i in table.co.values]))],
+               'layout': go.Layout(geo_scope='world',
+                           width=1000,
+                           height=600)
+               })
 
 ])
 
