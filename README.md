@@ -9,11 +9,11 @@ Aron Pap
 In this project we aim to collect and store data about air pollution in different cities throughout the world. Driven by the final goal of building an "Early Warning System" for unhealthy air pollution levels we collect data from 3 main sources via API:
 
 * Basic air pollution data (main pollutants PM25, PM10, CO, CO2 etc., source: The World Air Quality Project)
-  *(https://aqicn.org/api/)
+  (https://aqicn.org/api/)
 * Basic weather data (temperature, wind, humidity etc.)
-  *(https://openweathermap.org/api)
+  (https://openweathermap.org/api)
 * Traffic data (number of traffic incidents as a proxy for emission of pollutants)
-  *(https://developer.here.com/documentation/traffic/dev_guide/topics/what-is.html)
+  (https://developer.here.com/documentation/traffic/dev_guide/topics/what-is.html)
 
 This collection is also inspired by scientific results related to potential predictors/causes of air pollution (https://www.economist.com/graphic-detail/2019/11/09/indias-toxic-smog-is-a-common-affliction-in-middle-income-countries)
 
