@@ -22,6 +22,7 @@ All the files we used to implement this project are available in our GitHub repo
 
 1. Set up MongoDB on your computer via Docker (*mongoDB_creator.sh*)
 2. Create a Python file which calls the API-s and insert the collected data into our database (*air_api_data.py*)
+  * Optionally some of the function definitions can be defined in separate **utils** files (*utils* folder)
 3. Create a Docker image from this file (*Dockerfile*)
 4. Set up a cron job to schedule running this Docker image every hour, consisting of:
   * A shell file with the commands (*cron.sh*)
