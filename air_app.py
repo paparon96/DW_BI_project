@@ -259,6 +259,8 @@ new_df = pd.merge(air_pollution_df, weather_df,  how='left', left_on=['city','ti
 new_df = pd.merge(new_df, traffic_df,  how='left', left_on=['city','time'], right_on = ['city','time'])
 print(new_df)
 
+# Save out modelling datasets
+new_df.to_csv('modelling_dataset.csv')
 
 ##################
 table = new_df
