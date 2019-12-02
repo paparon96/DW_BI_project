@@ -8,7 +8,7 @@ Aron Pap
 ### Introduction
 In this project we aim to collect and store data about air pollution in different cities throughout the world. Driven by the final goal of building an "Early Warning System" for unhealthy air pollution levels we collect data from 3 main sources via API:
 
-* Basic air pollution data (PM25, PM10, CO, $CO_2$, The World Air Quality Project)
+* Basic air pollution data (main pollutants PM25, PM10, CO, CO2 etc., source: The World Air Quality Project)
   *(https://aqicn.org/api/)
 * Basic weather data (temperature, wind, humidity etc.)
   *(https://openweathermap.org/api)
@@ -17,7 +17,7 @@ In this project we aim to collect and store data about air pollution in differen
 
 This collection is also inspired by scientific results related to potential predictors/causes of air pollution (https://www.economist.com/graphic-detail/2019/11/09/indias-toxic-smog-is-a-common-affliction-in-middle-income-countries)
 
-We store the collected datasets in MongoDB on an AWS machine. We will build a predictive model once we have enough historical data. Then we have already set up an ETL process that gets the data from our MongoDB (later capable of running the predictions) and transforms it into a new dataframe which is the input for our dashboard. The dashboard will be implemented via Dash.
+We store the collected datasets in MongoDB on an AWS machine. We will build a predictive model once we have enough historical data. Subsequentially we set up an ETL process that gets the data from our MongoDB (later capable of running the predictions) and transforms it into a new dataframe which is the input for our dashboard. The dashboard will be implemented via Dash.
 
 ### PART 1
 
@@ -25,6 +25,7 @@ All the files we used to implement this project are available in our GitHub repo
 
 1. Set up MongoDB on your computer via Docker (*mongoDB_creator.sh*)
 2. Create a Python file which calls the API-s and insert the collected data into our database (*air_api_data.py*)
+  * Use the API keys provided in the *air_api_data.py* script
   * Optionally some of the function definitions can be defined in separate **utils** files (*utils* folder)
 3. Create a Docker image from this file (*Dockerfile*)
 4. Set up a cron job to schedule running this Docker image every hour, consisting of:
