@@ -315,8 +315,8 @@ html.Div(id = 'foo2'),
                              name=city2)
                              for city2,table in table.groupby('city')],
         'layout': {
-            'title': 'Ozone levels in different cities'
-        }
+            'title': 'Ozone levels in different cities',
+            }
 }),
 dcc.RangeSlider(
 id='time-slider2',
@@ -416,4 +416,4 @@ def timeline2(boxes, time_range, table = table):
 # Testing
 
 
-app.run_server(host='0.0.0.0',debug=True,port=8050)
+#app.run_server(host='0.0.0.0',debug=True,port=8050)

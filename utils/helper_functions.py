@@ -3,11 +3,30 @@ import requests
 import json
 import pymongo
 
-def api_call(city,token):
-    token = "03df9f2d4870930cf65e4acb042372759854c2a2"
+def get_data_pollution(city,token):
     url= "https://api.waqi.info/feed/{0}/?token={1}".format(city,token)
     res = requests.get(url)
     temp = json.loads(res.content)
+
+    return temp
+
+
+def get_data_weather(city):
+    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&APPID=bd64898a234d3ac401ec97cfd4ba3f2d'.format(city)
+
+    res = requests.get(url)
+    temp = json.loads(res.content)
+
+    return temp
+
+def get_data_traffic(latitude1,longitude1,latitude2,longitude2):
+
+    url='https://traffic.api.here.com/traffic/6.3/incidents.json?app_id=u7vId3aGe6N0GmKuvv1s&app_code=G2byrnWbiV3VZhcX_W_pYg \
+    &bbox={},{};{},{} \
+    &criticality=minor'.format(latitude1,longitude1,latitude2,longitude2)
+
+    response = requests.get(url)
+    temp = json.loads(response.content)
 
     return temp
 
