@@ -6,7 +6,11 @@ Keyvan Amini <br>
 Aron Pap
 
 ### TO-DO
-  * A
+  * (P3) Use snake-case for variable names everywhere!!
+  * (P2) Put MongoDB Access instructions into the README
+  * (P2) Put tokens and keys into environmental variables
+  * (P3) Remove commented out code!
+  * (P4) Use spaces instead of tabs in Python!
 
 ### Introduction
 In this project we aim to collect and store data about air pollution in different cities throughout the world. Driven by the final goal of building an "Early Warning System" for unhealthy air pollution levels we collect data from 3 main sources via API:
