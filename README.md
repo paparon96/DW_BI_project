@@ -9,6 +9,7 @@ Aron Pap
   * (P1) Check why recent points are not displayed on the graph!!
   * (P1) Check why map has so many circles!
   * (P1) Add new graphs
+  * (P1) Adding the prediction points
   * (P3) Use snake-case for variable names everywhere!!
   * (P2) Put tokens and keys into environmental variables
   * (P4) Use spaces instead of tabs in Python!
