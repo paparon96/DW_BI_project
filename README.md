@@ -7,7 +7,6 @@ Aron Pap
 
 ### TO-DO
   * (P3) Use snake-case for variable names everywhere!!
-  * (P2) Put MongoDB Access instructions into the README
   * (P2) Put tokens and keys into environmental variables
   * (P3) Remove commented out code!
   * (P4) Use spaces instead of tabs in Python!
