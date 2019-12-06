@@ -264,7 +264,7 @@ new_df.to_csv('modelling_dataset.csv')
 
 ##################
 table = new_df
-table = table.iloc[0:300,:]
+# table = table.iloc[0:300,:]
 print(table.head())
 
 MIN_TIME = min(table['time'])
