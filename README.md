@@ -10,6 +10,12 @@ Aron Pap
   * (P2) Put tokens and keys into environmental variables
   * (P3) Remove commented out code!
   * (P4) Use spaces instead of tabs in Python!
+  * (P1) Handle errors, exceptions --> Added logging to the Python file (example below)
+    * ERROR:root:
+    * Traceback (most recent call last):
+    * File "air_api_data.py", line 88, in <module>
+    * data1 = temp['TRAFFIC_ITEMS']
+    * KeyError: 'TRAFFIC_ITEMS'
 
 ### Introduction
 In this project we aim to collect and store data about air pollution in different cities throughout the world. Driven by the final goal of building an "Early Warning System" for unhealthy air pollution levels we collect data from 3 main sources via API:
