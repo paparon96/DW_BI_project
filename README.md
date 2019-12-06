@@ -5,6 +5,9 @@
 Keyvan Amini <br>
 Aron Pap
 
+### TO-DO
+  * A
+
 ### Introduction
 In this project we aim to collect and store data about air pollution in different cities throughout the world. Driven by the final goal of building an "Early Warning System" for unhealthy air pollution levels we collect data from 3 main sources via API:
 
