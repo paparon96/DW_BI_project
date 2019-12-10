@@ -7,6 +7,9 @@ import dash_core_components as dcc
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 import chart_studio as py #added newly
+import pickle
+from dash_utils import add_row, lag_creators
+import xgboost
 
 
 import pandas as pd
@@ -263,8 +266,99 @@ print(new_df)
 new_df.to_csv('modelling_dataset.csv')
 
 ##################
-table = new_df
-# table = table.iloc[0:300,:]
+#### MODELLING
+
+new_df = new_df.drop_duplicates(subset=['city', 'time'], keep='last')
+
+# Copy current dataset to be used for prediction later
+pred_table = new_df.copy()
+
+# Import model
+filename = './xgb_model.sav'
+xgb1 = pickle.load(open(filename, 'rb'))
+
+# Import columns for modelling
+filename = './model_cols.sav'
+lag_cols = pickle.load(open(filename, 'rb'))
+
+
+pred_table2 = pred_table.copy()
+print(pred_table2.shape)
+
+pred_table2['time'] =  pd.to_datetime(pred_table2['time'], format='%Y-%m-%d %H:%M:%S')
+#print(pred_table2.dtypes)
+pred_table2 = pred_table2.reset_index(drop=True)
+
+unique_city_names = pred_table2.city.nunique()
+lags = 8
+
+# Dummy, indicator column
+pred_table2['forecast'] = 0
+
+# Always the last 3 (number of lags) for each city is the prediction!
+def add_row(x,lags):
+    for i in range(0,lags):
+        last_row = x.iloc[-1]
+        last_time = last_row.time
+        last_row['time'] = last_time + pd.DateOffset(hours=1)
+        x = x.append(last_row)
+        x.iloc[-1,-1] = 1
+    return x
+
+
+pred_table2 = pred_table2.groupby('city').apply(add_row, lags=5).reset_index(drop=True)
+print(pred_table2.shape)
+
+pred_table3 = pred_table2.copy()
+pred_table3 = lag_creators(8,'co',pred_table3)
+pred_table3 = lag_creators(8,'accident_num',pred_table3)
+pred_table3 = lag_creators(8,'wind_speed',pred_table3)
+
+pred_table3 = pred_table3.dropna()
+
+pred_table4 = pred_table3[pred_table3.forecast==1]
+print(pred_table4)
+#pred_table4 = pred_table4.dropna()
+
+pred_features = pred_table4[lag_cols]
+
+
+# Convert columns to numeric!
+def num_convert(x):
+    temp = pd.to_numeric(x,errors='coerce')
+
+    return temp
+
+pred_features = pred_features.apply(num_convert)
+
+print("Prediction table")
+print(pred_features)
+
+y_forecast = xgb1.predict(pred_features)
+print(len(y_forecast))
+print(y_forecast)
+
+
+j=0
+forecast_col = pred_table3['forecast']
+print(type(forecast_col))
+for i in range(0,pred_table3.shape[0]):
+
+    #if pred_table2.iloc[i,-1]==1:
+    if forecast_col.iloc[i]==1:
+        pred_table3.iloc[i,2]=y_forecast[j]
+        #print(pred_table2.iloc[i,:])
+        j = j+1
+
+    #print("i {}".format(i))
+    #print("j {}".format(j))
+
+
+
+##################
+#table = new_df
+#table = table.iloc[0:300,:]
+table = pred_table3.copy()
 print(table.head())
 
 MIN_TIME = min(table['time'])
@@ -273,24 +367,36 @@ MAX_TIME = max(table['time'])
 # Filter dataset for given range
 table_v1 = table.copy()
 
+# Convert columns to numeric!
+table_v1['co'] = pd.to_numeric(table_v1['co'],errors='coerce')
+table_v1['pm25'] = pd.to_numeric(table_v1['pm25'],errors='coerce')
+#print(table_v1.dtypes)
+
+
 app = dash.Dash('Dashboards')
 
 app.layout = html.Div(className = 'layout', children = [
     html.H1(className = 'title', children = 'Air Pollution Dashboard'),
     html.H4('Air pollution levels in different cities', className='subtitle'),
-    html.Div(className='timeline-controls', children = [
-    dcc.Checklist(id = 'country-checkbox',
-                  options = [ {'label': 'By City', 'value': 'by_country'}]),
-    html.Div(id = 'foo'),
-]),
+    #html.Div(className='timeline-controls', children = [
+    #dcc.Checklist(id = 'country-checkbox',
+    #              options = [ {'label': 'By City', 'value': 'by_country'}]),
+    #html.Div(id = 'foo'),
+#]),
     dcc.Graph(id='timeline3', figure={
-        'data': [go.Scatter(x = table_v1.time,
-                            y = table_v1.pm25,
-                            ids = table_v1.city, mode = 'markers',
-                            name=city)
-                            for city,table_v1 in table_v1.groupby('city') ],
+        'data': [go.Scatter(x = table_v11.time,
+                            y = table_v11.co,
+                            # ids = table_v1.city,
+                            # mode = 'markers',
+                            name=city, marker=dict(size=12,
+        #color=np.where(np.logical_and(table_v11['forecast']==1,True), 'green', 'red'),
+        color=np.where(table_v11['forecast']==1, 'red', 'green'),
+    )) # Change color to forecast later!!
+        for city,table_v11 in table_v1.groupby('city') ],
         'layout': {
-            'title': 'PM25 levels in different cities'
+        'title': 'CO levels in different cities',
+        'plot_bgcolor': '#DCDCDC',
+                'paper_bgcolor': '#DCDCDC'
         }
 }),
 dcc.RangeSlider(
@@ -301,21 +407,23 @@ value=[MIN_TIME.timestamp(), MAX_TIME.timestamp()],
 marks = get_marks(MIN_TIME, MAX_TIME)
 )
 ,
-html.Div(className='timeline-controls2', children = [
-dcc.Checklist(id = 'country-checkbox2',
-              options = [ {'label': 'By City', 'value': 'by_country2'}]),
-html.Div(id = 'foo2'),
-]),
+#html.Div(className='timeline-controls2', children = [
+#dcc.Checklist(id = 'country-checkbox2',
+#              options = [ {'label': 'By City', 'value': 'by_country2'}]),
+#html.Div(id = 'foo2'),
+#]),
 
     dcc.Graph(id='timeline2', figure={
-        'data': [go.Scatter(x = table.time,
-                            y = table.o3,
-                            ids = table.city,
-                             mode = 'markers',
+        'data': [go.Scatter(x = table12.time,
+                            y = table12.o3,
+                            #ids = table12.city,
+                             #mode = 'markers',
                              name=city2)
-                             for city2,table in table.groupby('city')],
+                             for city2,table12 in table.groupby('city')],
         'layout': {
             'title': 'Ozone levels in different cities',
+            'plot_bgcolor': '#DCDCDC',
+                    'paper_bgcolor': '#DCDCDC'
             }
 }),
 dcc.RangeSlider(
@@ -326,92 +434,247 @@ value=[MIN_TIME.timestamp(), MAX_TIME.timestamp()],
 marks = get_marks(MIN_TIME, MAX_TIME)
 ),
 
+dcc.Graph(id='timeline4', figure={
+    'data': [go.Scatter(x = table12.time,
+                        y = table12.pm25,
+                        #ids = table12.city,
+                         #mode = 'markers',
+                         name=city2)
+                         for city2,table12 in table.groupby('city')],
+    'layout': {
+        'title': 'PM25 levels in different cities',
+        'plot_bgcolor': '#DCDCDC',
+                'paper_bgcolor': '#DCDCDC'
+        }
+}),
+dcc.RangeSlider(
+id='time-slider4',
+min=MIN_TIME.timestamp(),
+max=MAX_TIME.timestamp(),
+value=[MIN_TIME.timestamp(), MAX_TIME.timestamp()],
+marks = get_marks(MIN_TIME, MAX_TIME)
+),
+
+dcc.Graph(id='timeline5', figure={
+    'data': [go.Scatter(x = table12.time,
+                        y = table12.pm10,
+                        #ids = table12.city,
+                         #mode = 'markers',
+                         name=city2)
+                         for city2,table12 in table.groupby('city')],
+    'layout': {
+        'title': 'PM10 levels in different cities',
+        'plot_bgcolor': '#DCDCDC',
+                'paper_bgcolor': '#DCDCDC'
+        }
+}),
+dcc.RangeSlider(
+id='time-slider5',
+min=MIN_TIME.timestamp(),
+max=MAX_TIME.timestamp(),
+value=[MIN_TIME.timestamp(), MAX_TIME.timestamp()],
+marks = get_marks(MIN_TIME, MAX_TIME)
+),
+
+dcc.Graph(id='timeline6', figure={
+    'data': [go.Scatter(x = table12.time,
+                        y = table12.pm10,
+                        #ids = table12.city,
+                         #mode = 'markers',
+                         name=city2)
+                         for city2,table12 in table.groupby('city')],
+    'layout': {
+        'title': 'NO2 levels in different cities',
+        'plot_bgcolor': '#DCDCDC',
+                'paper_bgcolor': '#DCDCDC'
+        }
+}),
+dcc.RangeSlider(
+id='time-slider6',
+min=MIN_TIME.timestamp(),
+max=MAX_TIME.timestamp(),
+value=[MIN_TIME.timestamp(), MAX_TIME.timestamp()],
+marks = get_marks(MIN_TIME, MAX_TIME)
+),
+
 dcc.Graph(
            id='geo',
            figure={
                'data': [go.Scattergeo(
-                       lon = table['longitude'],
-                       lat = table['latitude'],
-                       text = table['city'],
+                       lon = table_v1['longitude'],
+                       lat = table_v1['latitude'],
+                       text = table_v1['city'],
                        #mode = 'markers'),
-                       marker = dict(size=[float(i)*2 for i in table.co.values]))],
+                       marker = dict(size=[float(i)/5 + 10 for i in table_v1.pm25.values],
+                       color=  np.where(table_v1.pm25.values > 150, 'red', 'green')),
+                       opacity = 0.9)],
                'layout': go.Layout(geo_scope='world',
                            width=1000,
-                           height=600)
+                           height=600,
+                           title="Average PM25 pollution levels",
+                           plot_bgcolor='rgba(0,0,0,0)',
+                                   paper_bgcolor='rgba(0,0,0,0)',
+                            geo = go.layout.Geo(
+                                bgcolor = '#DCDCDC',
+                                framecolor='#DCDCDC'
+                                ))
                })
-
 ])
 
 
-@app.callback(
-    Output('foo', 'children'),
-    [Input('country-checkbox', 'value')]
-)
-def timeline(boxes):
-    print(boxes)
-    if boxes and 'by_country' in boxes:
-        #print('foo')
-        print(table)
+#@app.callback(
+#    Output('foo', 'children'),
+#    [Input('country-checkbox', 'value')]
+#)
+#def timeline(boxes):
+#    print(boxes)
+#    if boxes and 'by_country' in boxes:
+#        #print('foo')
+#        print(table)
     #return 'foo' if boxes else 'bar'
-    return 'foo' if boxes else 'bar'
+#    return 'foo' if boxes else 'bar'
 
 
 @app.callback(
     Output('timeline3', 'figure'),
-    [Input('country-checkbox', 'value') ,
+    [
+    #Input('country-checkbox', 'value') ,
     Input('time-slider', 'value')
     ]
 )
-def timeline3(boxes, time_range, table_v1 = table_v1):
+def timeline3(time_range, table_v1 = table_v1):
     start, finish = [datetime.fromtimestamp(t) for t in time_range]
     filtered_df = table_v1[table_v1.time>start]
     filtered_df = filtered_df[table_v1.time<finish]
 
     return {
-        'data': [go.Scatter(x = filtered_df.time,
-                            y = filtered_df.pm25,
-                            ids = filtered_df.city, mode = 'markers',
-                            name=city)
-                            for city,filtered_df in filtered_df.groupby('city') ],
+        'data': [go.Scatter(x = filtered_df11.time,
+                            y = filtered_df11.co,
+                            #ids = filtered_df.city,
+                            #mode = 'markers',
+                            name=city,
+                            marker=dict(size=12,
+        #color=np.where(np.logical_and(table_v11['forecast']==1,True), 'green', 'red'),
+        color=np.where(filtered_df11['forecast']==1, 'green', 'red'),
+    )) for city,filtered_df11 in filtered_df.groupby('city') ],
         'layout': {
-            'title': 'PM25 levels in different cities'
+            'title': 'CO levels in different cities',
+            'plot_bgcolor': '#DCDCDC',
+                    'paper_bgcolor': '#DCDCDC'
         }}
 
 
-@app.callback(
-    Output('foo2', 'children'),
-    [Input('country-checkbox2', 'value')]
-)
-def timeline22(boxes):
+#@app.callback(
+#    Output('foo2', 'children'),
+#    [Input('country-checkbox2', 'value')]
+#)
+#def timeline22(boxes):
     #print(boxes)
     #if boxes and 'by_country' in boxes:
         #print('foo')
         #print(table)
     #return 'foo' if boxes else 'bar'
-    return 'foo' if boxes else 'bar'
+#    return 'foo' if boxes else 'bar'
 
 @app.callback(
     Output('timeline2', 'figure'),
-    [Input('country-checkbox2', 'value') ,
+    [
+    #Input('country-checkbox2', 'value') ,
     Input('time-slider2', 'value')
     ]
 )
-def timeline2(boxes, time_range, table = table):
+def timeline2(time_range, table = table):
     start, finish = [datetime.fromtimestamp(t) for t in time_range]
     filtered_df2 = table[table.time>start]
     filtered_df2 = filtered_df2[filtered_df2.time<finish]
 
     return {
-        'data': [go.Scatter(x = filtered_df2.time,
-                            y = filtered_df2.o3,
-                            ids = filtered_df2.city,
-                             mode = 'markers',
+        'data': [go.Scatter(x = table12.time,
+                            y = table12.o3,
+                            #ids = table12.city,
+                             #mode = 'markers',
                              name=city)
-                             for city,table in filtered_df2.groupby('city')],
+                             for city,table12 in filtered_df2.groupby('city')],
         'layout': {
-            'title': 'Ozone levels in different cities'
+            'title': 'Ozone levels in different cities',
+            'plot_bgcolor': '#DCDCDC',
+                    'paper_bgcolor': '#DCDCDC'
         }}
 
+@app.callback(
+    Output('timeline4', 'figure'),
+    [
+    #Input('country-checkbox2', 'value') ,
+    Input('time-slider4', 'value')
+    ]
+)
+def timeline4(time_range, table = table):
+    start, finish = [datetime.fromtimestamp(t) for t in time_range]
+    filtered_df3 = table[table.time>start]
+    filtered_df3 = filtered_df3[filtered_df3.time<finish]
+
+    return {
+        'data': [go.Scatter(x = table12.time,
+                            y = table12.pm25,
+                            #ids = table12.city,
+                             #mode = 'markers',
+                             name=city)
+                             for city,table12 in filtered_df3.groupby('city')],
+        'layout': {
+            'title': 'PM25 levels in different cities',
+            'plot_bgcolor': '#DCDCDC',
+                    'paper_bgcolor': '#DCDCDC'
+        }}
+
+@app.callback(
+    Output('timeline5', 'figure'),
+    [
+    #Input('country-checkbox2', 'value') ,
+    Input('time-slider5', 'value')
+    ]
+)
+def timeline5(time_range, table = table):
+    start, finish = [datetime.fromtimestamp(t) for t in time_range]
+    filtered_df4 = table[table.time>start]
+    filtered_df4 = filtered_df4[filtered_df4.time<finish]
+
+    return {
+        'data': [go.Scatter(x = table12.time,
+                            y = table12.pm10,
+                            #ids = table12.city,
+                             #mode = 'markers',
+                             name=city)
+                             for city,table12 in filtered_df4.groupby('city')],
+        'layout': {
+            'title': 'PM10 levels in different cities',
+            'plot_bgcolor': '#DCDCDC',
+                    'paper_bgcolor': '#DCDCDC'
+        }}
+
+@app.callback(
+    Output('timeline6', 'figure'),
+    [
+    #Input('country-checkbox2', 'value') ,
+    Input('time-slider6', 'value')
+    ]
+)
+def timeline6(time_range, table = table):
+    start, finish = [datetime.fromtimestamp(t) for t in time_range]
+    filtered_df4 = table[table.time>start]
+    filtered_df4 = filtered_df4[filtered_df4.time<finish]
+
+    return {
+        'data': [go.Scatter(x = table12.time,
+                            y = table12.pm10,
+                            #ids = table12.city,
+                             #mode = 'markers',
+                             name=city)
+                             for city,table12 in filtered_df4.groupby('city')],
+        'layout': {
+            'title': 'NO2 levels in different cities',
+            'plot_bgcolor': '#DCDCDC',
+                    'paper_bgcolor': '#DCDCDC'
+        }}
 
 # Testing
 

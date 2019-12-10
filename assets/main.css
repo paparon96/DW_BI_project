@@ -3,11 +3,14 @@
 body {
   font-weight: 300;
   font-family: "Raleway", Helvetica, sans-serif;
-  color: #222;
+  /*color: #222; */
+  background-color: #DCDCDC;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: inherit;
+  color: #000080;
+  background-color: #DCDCDC;
 }
 
 .layout {
@@ -30,6 +33,16 @@ h1, h2, h3, h4, h5, h6 {
 
 #time-slider {
   width: 70%;
+  height: 50px;
+}
+
+#timeline3 {
+  width: 100%;
+}
+
+#geo {
+  color: #000080;
+  background-color: #DCDCDC;
 }
 
 #products {
