@@ -41,17 +41,19 @@ for city in cities:
 
 
 ##### TRAFFIC DATA
-		city_data = pd.read_csv('https://raw.githubusercontent.com/paparon96/Datasets/master/worldcities.csv')
+		city_data = pd.read_csv('https://raw.githubusercontent.com/paparon96/Datasets/master/worldcities-2.csv')
+		#print(city_data.columns)
 		lat = city_data[city_data['city_ascii']==city].lat
 		lng = city_data[city_data['city_ascii']==city].lng
-
+		print(lat)
+		print(lng)
 		longitude1 = str(round((lng-0.2111).values[0],3))
 		longitude2 = str(round((lng+0.2111).values[0],3))
 		latitude1 = str(round((lat-0.2111).values[0],3))
 		latitude2 = str(round((lat+0.2111).values[0],3))
 
 		temp_traffic = get_data_traffic(latitude1,longitude1,latitude2,longitude2)
-
+		#print(temp_traffic)
 		data1 = temp_traffic['TRAFFIC_ITEMS']
 		data2 = data1['TRAFFIC_ITEM']
 		ids = [d['TRAFFIC_ITEM_ID'] for d in data2]
