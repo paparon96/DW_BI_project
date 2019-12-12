@@ -184,6 +184,7 @@ for i in range(0,len(data)):
 
 
     values = np.array(values)
+    print(values)
     values = values.reshape(1,12)
     if i==0:
         weather_df = pd.DataFrame(values)
@@ -520,7 +521,6 @@ dcc.Graph(
                                 ))
                })
 ])
-
 
 #@app.callback(
 #    Output('foo', 'children'),
