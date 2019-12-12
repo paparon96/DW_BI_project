@@ -432,7 +432,7 @@ marks = get_marks(MIN_TIME, MAX_TIME)
                             #ids = table12.city,
                              #mode = 'markers',
                              name=city2)
-                             for city2,table12 in table.groupby('city')],
+                             for city2,table12 in table_non_forecast.groupby('city')],
         'layout': {
             'title': 'Ozone levels in different cities',
             'plot_bgcolor': '#DCDCDC',
@@ -453,7 +453,7 @@ dcc.Graph(id='timeline4', figure={
                         #ids = table12.city,
                          #mode = 'markers',
                          name=city2)
-                         for city2,table12 in table.groupby('city')],
+                         for city2,table12 in table_non_forecast.groupby('city')],
     'layout': {
         'title': 'PM25 levels in different cities',
         'plot_bgcolor': '#DCDCDC',
@@ -474,7 +474,7 @@ dcc.Graph(id='timeline5', figure={
                         #ids = table12.city,
                          #mode = 'markers',
                          name=city2)
-                         for city2,table12 in table.groupby('city')],
+                         for city2,table12 in table_non_forecast.groupby('city')],
     'layout': {
         'title': 'PM10 levels in different cities',
         'plot_bgcolor': '#DCDCDC',
@@ -495,7 +495,7 @@ dcc.Graph(id='timeline6', figure={
                         #ids = table12.city,
                          #mode = 'markers',
                          name=city2)
-                         for city2,table12 in table.groupby('city')],
+                         for city2,table12 in table_non_forecast.groupby('city')],
     'layout': {
         'title': 'NO2 levels in different cities',
         'plot_bgcolor': '#DCDCDC',
@@ -599,7 +599,7 @@ def timeline3(time_range, table_v1 = table_v1):
 )
 def timeline2(time_range, table = table):
     start, finish = [datetime.fromtimestamp(t) for t in time_range]
-    filtered_df2 = table[table.time>start]
+    filtered_df2 = table_non_forecast[table_non_forecast.time>start]
     filtered_df2 = filtered_df2[filtered_df2.time<finish]
 
     return {
@@ -624,7 +624,7 @@ def timeline2(time_range, table = table):
 )
 def timeline4(time_range, table = table):
     start, finish = [datetime.fromtimestamp(t) for t in time_range]
-    filtered_df3 = table[table.time>start]
+    filtered_df3 = table_non_forecast[table_non_forecast.time>start]
     filtered_df3 = filtered_df3[filtered_df3.time<finish]
 
     return {
@@ -649,7 +649,7 @@ def timeline4(time_range, table = table):
 )
 def timeline5(time_range, table = table):
     start, finish = [datetime.fromtimestamp(t) for t in time_range]
-    filtered_df4 = table[table.time>start]
+    filtered_df4 = table_non_forecast[table_non_forecast.time>start]
     filtered_df4 = filtered_df4[filtered_df4.time<finish]
 
     return {
@@ -674,7 +674,7 @@ def timeline5(time_range, table = table):
 )
 def timeline6(time_range, table = table):
     start, finish = [datetime.fromtimestamp(t) for t in time_range]
-    filtered_df4 = table[table.time>start]
+    filtered_df4 = table_non_forecast[table_non_forecast.time>start]
     filtered_df4 = filtered_df4[filtered_df4.time<finish]
 
     return {
