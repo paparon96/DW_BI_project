@@ -7,6 +7,13 @@ import pymongo
 import datetime
 import pandas as pd
 import logging
+from dotenv import load_dotenv, find_dotenv
+import os
+
+# Importing environmental variables
+env_path = './api_keys.env'
+load_dotenv(dotenv_path=env_path)
+#load_dotenv(find_dotenv())
 
 from utils.helper_functions import get_data_pollution, get_data_weather, get_data_traffic, mongo_insertion
 
@@ -19,10 +26,11 @@ for city in cities:
 
 ##### AIR POLLUTION DATA
 # Set parameters
-		token = "03df9f2d4870930cf65e4acb042372759854c2a2"
+		#token = "03df9f2d4870930cf65e4acb042372759854c2a2"
 
 # Get API content
-		temp = get_data_pollution(city,token)
+		POLLUTION_TOKEN = os.getenv("POLLUTION_TOKEN")
+		temp = get_data_pollution(city,POLLUTION_TOKEN)
 		temp['city']=city
 		print(temp)
 # Access MongoDB and instert data
@@ -31,7 +39,8 @@ for city in cities:
 
 
 ##### WEATHER DATA
-		temp_weather = get_data_weather(city)
+		WEATHER_TOKEN = os.getenv("WEATHER_TOKEN")
+		temp_weather = get_data_weather(city,WEATHER_TOKEN)
 # Get current timestamp added to the dictionary
 		temp_weather['time'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 		temp_weather['city']=city
@@ -52,11 +61,14 @@ for city in cities:
 		latitude1 = str(round((lat-0.2111).values[0],3))
 		latitude2 = str(round((lat+0.2111).values[0],3))
 
-		temp_traffic = get_data_traffic(latitude1,longitude1,latitude2,longitude2)
+		TRAFFIC_ID = os.getenv("TRAFFIC_ID")
+		TRAFFIC_CODE = os.getenv("TRAFFIC_CODE")
+		temp_traffic = get_data_traffic(TRAFFIC_ID,TRAFFIC_CODE,latitude1,longitude1,latitude2,longitude2)
 		#print(temp_traffic)
 		data1 = temp_traffic['TRAFFIC_ITEMS']
 		data2 = data1['TRAFFIC_ITEM']
 		ids = [d['TRAFFIC_ITEM_ID'] for d in data2]
+		print(len(ids))
 
 #Count ids to get the number of traffic instances
 		temp_traffic = {"accident_num":len(ids)}

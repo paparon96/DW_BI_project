@@ -31,8 +31,32 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 auto;
 }
 
+.rc-slider-mark-text {
+    transform: rotate(-45deg);
+  }
+
 #time-slider {
-  width: 70%;
+  width: 100%;
+  height: 50px;
+}
+
+#time-slider2 {
+  width: 100%;
+  height: 50px;
+}
+
+#time-slider4 {
+  width: 100%;
+  height: 50px;
+}
+
+#time-slider5 {
+  width: 100%;
+  height: 50px;
+}
+
+#time-slider6 {
+  width: 100%;
   height: 50px;
 }
 

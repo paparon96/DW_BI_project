@@ -25,7 +25,7 @@ def get_marks(start, end):
     current = start
     while current <= end:
         result.append(current)
-        current += relativedelta(days=1)
+        current += relativedelta(days=2)
     #return {int(m.timestamp()): m.strftime('%Y-%m-%d %H') for m in result}
     return {int(m.timestamp()): m.strftime('%Y-%m-%d') for m in result}
     #return {m: m.strftime('%Y-%m-%d %H') for m in result}
@@ -357,7 +357,11 @@ for i in range(0,pred_table3.shape[0]):
     #print("i {}".format(i))
     #print("j {}".format(j))
 
-
+# Non-forecast DataFrame
+table_non_forecast = new_df.copy()
+# Convert columns to numeric!
+table_non_forecast['co'] = pd.to_numeric(table_non_forecast['co'],errors='coerce')
+table_non_forecast['pm25'] = pd.to_numeric(table_non_forecast['pm25'],errors='coerce')
 
 ##################
 #table = new_df
@@ -376,6 +380,11 @@ table_v1['co'] = pd.to_numeric(table_v1['co'],errors='coerce')
 table_v1['pm25'] = pd.to_numeric(table_v1['pm25'],errors='coerce')
 #print(table_v1.dtypes)
 
+
+# Support table for world map
+print("Grouped table")
+temped_group_table = table_non_forecast.groupby(by='city').last()
+print(temped_group_table)
 
 app = dash.Dash('Dashboards')
 
@@ -505,12 +514,14 @@ dcc.Graph(
            id='geo',
            figure={
                'data': [go.Scattergeo(
-                       lon = table_v1['longitude'],
-                       lat = table_v1['latitude'],
-                       text = table_v1['city'],
+                       lon = temped_group_table['longitude'],
+                       lat = temped_group_table['latitude'],
+                       text = temped_group_table.index,
                        #mode = 'markers'),
-                       marker = dict(size=[float(i)/5 + 10 for i in table_v1.pm25.values],
-                       color=  np.where(table_v1.pm25.values > 150, 'red', 'green')),
+                       #marker = dict(size=[float(i)/5 + 10 for i in table_non_forecast.pm25.values],
+                       marker = dict(size=[float(i)/5 + 10 for i in table_non_forecast.groupby(by='city')['pm25'].mean()],
+                       #color=  np.where(table_non_forecast.pm25.values > 150, 'red', 'green')),
+                       color=  np.where(table_non_forecast.groupby(by='city')['pm25'].mean() > 150, 'red', 'green')),
                        opacity = 0.9)],
                'layout': go.Layout(geo_scope='world',
                            width=1000,

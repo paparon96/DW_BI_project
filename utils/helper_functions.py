@@ -11,19 +11,19 @@ def get_data_pollution(city,token):
     return temp
 
 
-def get_data_weather(city):
-    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&APPID=bd64898a234d3ac401ec97cfd4ba3f2d'.format(city)
+def get_data_weather(city,token):
+    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&APPID={}'.format(city,token)
 
     res = requests.get(url)
     temp = json.loads(res.content)
 
     return temp
 
-def get_data_traffic(latitude1,longitude1,latitude2,longitude2):
+def get_data_traffic(app_id,app_code,latitude1,longitude1,latitude2,longitude2):
 
-    url='https://traffic.api.here.com/traffic/6.3/incidents.json?app_id=u7vId3aGe6N0GmKuvv1s&app_code=G2byrnWbiV3VZhcX_W_pYg \
+    url='https://traffic.api.here.com/traffic/6.3/incidents.json?app_id={}&app_code={} \
     &bbox={},{};{},{} \
-    &criticality=minor'.format(latitude1,longitude1,latitude2,longitude2)
+    &criticality=minor'.format(app_id,app_code,latitude1,longitude1,latitude2,longitude2)
 
     response = requests.get(url)
     temp = json.loads(response.content)
