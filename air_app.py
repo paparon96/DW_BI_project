@@ -153,8 +153,11 @@ for i in range(0,len(data)):
     values.append(temp['time'])
 
     # Get basic weather data
-    for key in temp2:
+    temperature_keys = ['temp','temp_min','temp_max']
+    #for key in temp2:
+    for key in temperature_keys:
 
+            #values.append(temp2[key])
             values.append(temp2[key])
 
 
