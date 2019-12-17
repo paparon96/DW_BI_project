@@ -266,8 +266,16 @@ new_df = pd.merge(air_pollution_df, weather_df,  how='left', left_on=['city','ti
 new_df = pd.merge(new_df, traffic_df,  how='left', left_on=['city','time'], right_on = ['city','time'])
 print(new_df)
 
+# Import old data
+old_data = pd.read_csv('./modelling_dataset.csv',index_col=0)
+print(old_data.head())
+
+# Merge with new data
+new_df = old_data.append(new_df)
+print(new_df.head())
+
 # Save out modelling datasets
-new_df.to_csv('modelling_dataset.csv')
+#new_df.to_csv('modelling_dataset.csv')
 
 ##################
 #### MODELLING
@@ -362,6 +370,8 @@ table_non_forecast = new_df.copy()
 # Convert columns to numeric!
 table_non_forecast['co'] = pd.to_numeric(table_non_forecast['co'],errors='coerce')
 table_non_forecast['pm25'] = pd.to_numeric(table_non_forecast['pm25'],errors='coerce')
+table_non_forecast['time'] =  pd.to_datetime(table_non_forecast['time'], format='%Y-%m-%d %H:%M:%S')
+
 
 ##################
 #table = new_df
