@@ -13,7 +13,6 @@ import os
 # Importing environmental variables
 env_path = './api_keys.env'
 load_dotenv(dotenv_path=env_path)
-#load_dotenv(find_dotenv())
 
 from utils.helper_functions import get_data_pollution, get_data_weather, get_data_traffic, mongo_insertion
 
@@ -25,8 +24,6 @@ for city in cities:
 		print(city)
 
 ##### AIR POLLUTION DATA
-# Set parameters
-		#token = "03df9f2d4870930cf65e4acb042372759854c2a2"
 
 # Get API content
 		POLLUTION_TOKEN = os.getenv("POLLUTION_TOKEN")
@@ -35,7 +32,6 @@ for city in cities:
 		print(temp)
 # Access MongoDB and instert data
 		mongo_insertion(temp,"air_pollution")
-
 
 
 ##### WEATHER DATA
@@ -51,7 +47,6 @@ for city in cities:
 
 ##### TRAFFIC DATA
 		city_data = pd.read_csv('https://raw.githubusercontent.com/paparon96/Datasets/master/worldcities-2.csv')
-		#print(city_data.columns)
 		lat = city_data[city_data['city_ascii']==city].lat
 		lng = city_data[city_data['city_ascii']==city].lng
 		print(lat)
@@ -64,7 +59,6 @@ for city in cities:
 		TRAFFIC_ID = os.getenv("TRAFFIC_ID")
 		TRAFFIC_CODE = os.getenv("TRAFFIC_CODE")
 		temp_traffic = get_data_traffic(TRAFFIC_ID,TRAFFIC_CODE,latitude1,longitude1,latitude2,longitude2)
-		#print(temp_traffic)
 		data1 = temp_traffic['TRAFFIC_ITEMS']
 		data2 = data1['TRAFFIC_ITEM']
 		ids = [d['TRAFFIC_ITEM_ID'] for d in data2]
@@ -72,6 +66,7 @@ for city in cities:
 
 #Count ids to get the number of traffic instances
 		temp_traffic = {"accident_num":len(ids)}
+		
 # Get current timestamp added to the dictionary
 		temp_traffic['time'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 		temp_traffic['city']=city
@@ -79,8 +74,5 @@ for city in cities:
 # Access MongoDB and instert data
 		mongo_insertion(temp_traffic,"traffic")
 
-
-
 	except:
 		logging.exception('')
-		#pass
