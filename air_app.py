@@ -543,7 +543,29 @@ dcc.Graph(
                                 bgcolor = '#DCDCDC',
                                 framecolor='#DCDCDC'
                                 ))
-               })
+               }),
+
+dcc.Graph(id='accidents', figure = {
+'data' : [go.Bar(ids = table12.index,
+               x = table12.time,
+               y = table12.accident_num,
+               orientation='v',
+               name = city2)
+        for city2,table12 in table_non_forecast.groupby('city')],
+        'layout': {
+            'title': 'Hourly traffic accidents in different cities',
+            'plot_bgcolor': '#DCDCDC',
+                    'paper_bgcolor': '#DCDCDC'
+            }
+}),
+dcc.RangeSlider(
+id='time-slider7',
+min=MIN_TIME.timestamp(),
+max=MAX_TIME.timestamp(),
+value=[MIN_TIME.timestamp(), MAX_TIME.timestamp()],
+marks = get_marks(MIN_TIME, MAX_TIME)
+)
+
 ])
 
 #@app.callback(
@@ -699,6 +721,32 @@ def timeline6(time_range, table = table):
             'plot_bgcolor': '#DCDCDC',
                     'paper_bgcolor': '#DCDCDC'
         }}
+
+@app.callback(
+    Output('accidents', 'figure'),
+    [
+    #Input('country-checkbox2', 'value') ,
+    Input('time-slider7', 'value')
+    ]
+)
+def accidents(time_range, table = table):
+    start, finish = [datetime.fromtimestamp(t) for t in time_range]
+    filtered_df5 = table_non_forecast[table_non_forecast.time>start]
+    filtered_df5 = filtered_df5[filtered_df5.time<finish]
+
+    return {
+    'data' : [go.Bar(ids = table12.index,
+                   x = table12.time,
+                   y = table12.accident_num,
+                   orientation='v',
+                   name = city2)
+            for city2,table12 in filtered_df5.groupby('city')],
+            'layout': {
+                'title': 'Hourly traffic accidents in different cities',
+                'plot_bgcolor': '#DCDCDC',
+                        'paper_bgcolor': '#DCDCDC'
+                }
+    }
 
 # Testing
 
