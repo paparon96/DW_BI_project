@@ -70,5 +70,11 @@ All the files we used to implement this part of the project are also available i
   * Merge dataframes on **time** and **city** (T)
   * Pass the dataframes to the dashboard application file (L)
 2. Train an XGBoost regressor for the forecast of CO pollution levels 3 hours in advance, using lagged variables (*Pollution_prediction.ipynb*)
-3. Also read in historical data from .csv file and merge with the data from the MongoDB (*modelling_dataset.csv* and *air_app.py*)
+  * Use the historical data (*modelling_dataset.csv*) as a training dataset
+  * Train the model
+  * Save the model as a pickle object
+3. Also read in historical data from csv file in *air_app.py* and merge with the data from the MongoDB (*modelling_dataset.csv* and *air_app.py*)
+4. Run the prediction on the dataframes, incorporate the forecast into the final dataframe used for the Dashboards.
+5. Create the code for the dashboards as in the second part of the *air_app.py* file
+6. Create a separate script for running the dashboard (*server.py*)
 
