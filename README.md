@@ -69,7 +69,7 @@ All the files we used to implement this part of the project are also available i
   * Turn collections into Pandas dataframes (T)
   * Merge dataframes on **time** and **city** (T)
   * Pass the dataframes to the dashboard application file (L)
-2. Train an XGBoost regressor for the forecast of CO pollution levels 3 hours in advance, using lagged variables (*Pollution_prediction.ipynb*)
+2. Train an XGBoost regressor for the forecast of CO pollution levels 5 hours in advance, using lagged variables (*Pollution_prediction.ipynb*)
   * Use the historical data (*modelling_dataset.csv*) as a training dataset
   * Train the model
   * Save the model as a pickle object
