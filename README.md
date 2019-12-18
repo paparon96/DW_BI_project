@@ -61,3 +61,20 @@ All the files we used to implement this project are available in our GitHub repo
 
 
 ### PART 2
+
+All the files we used to implement this part of the project are also available in our GitHub repository. To replicate the results please use the following steps:
+
+1. Set up ETL process through a Python file: (first part of *air_app.py*)
+  * Extract collections from our mongoDB database (E)
+  * Turn collections into Pandas dataframes (T)
+  * Merge dataframes on **time** and **city** (T)
+  * Pass the dataframes to the dashboard application file (L)
+2. Train an XGBoost regressor for the forecast of CO pollution levels 3 hours in advance, using lagged variables (*Pollution_prediction.ipynb*)
+  * Use the historical data (*modelling_dataset.csv*) as a training dataset
+  * Train the model
+  * Save the model as a pickle object
+3. Also read in historical data from csv file in *air_app.py* and merge with the data from the MongoDB (*modelling_dataset.csv* and *air_app.py*)
+4. Run the prediction on the dataframes, incorporate the forecast into the final dataframe used for the dashboards
+5. Create the code for the dashboards as in the second part of the *air_app.py* file
+6. Create a separate script for running the dashboard (*server.py*)
+
