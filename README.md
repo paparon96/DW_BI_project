@@ -74,7 +74,7 @@ All the files we used to implement this part of the project are also available i
   * Train the model
   * Save the model as a pickle object
 3. Also read in historical data from csv file in *air_app.py* and merge with the data from the MongoDB (*modelling_dataset.csv* and *air_app.py*)
-4. Run the prediction on the dataframes, incorporate the forecast into the final dataframe used for the Dashboards.
+4. Run the prediction on the dataframes, incorporate the forecast into the final dataframe used for the dashboards
 5. Create the code for the dashboards as in the second part of the *air_app.py* file
 6. Create a separate script for running the dashboard (*server.py*)
 
