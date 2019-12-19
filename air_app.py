@@ -220,11 +220,6 @@ print(old_data.head())
 new_df = old_data.append(new_df)
 print(new_df.head())
 
-# Move it so that it predicts properly
-new_df['time'] =  pd.to_datetime(new_df['time'], format='%Y-%m-%d %H:%M:%S')
-
-new_df.loc[new_df.city=='Budapest','time'] = new_df.loc[new_df.city=='Budapest','time']  - timedelta(hours=1)
-
 
 # Save out modelling datasets
 #new_df.to_csv('modelling_dataset.csv')
