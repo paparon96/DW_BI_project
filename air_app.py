@@ -348,6 +348,14 @@ app.layout = html.Div(className = 'layout', children = [
                 'paper_bgcolor': '#DCDCDC'
         }
 }),
+
+dcc.RangeSlider(
+id='time-slider',
+min=MIN_TIME.timestamp(),
+max=MAX_TIME.timestamp(),
+value=[MIN_TIME.timestamp(), MAX_TIME.timestamp()],
+marks = get_marks(MIN_TIME, MAX_TIME)
+),
 dcc.Graph(id='accidents_co_corr', figure = {
 'data' : [go.Scatter(ids = table12.index,
 x = table12.accident_num,
@@ -378,15 +386,7 @@ for city2,table12 in table_non_forecast.groupby('city')],
 'plot_bgcolor': '#DCDCDC',
      'paper_bgcolor': '#DCDCDC'
 }
-}),
-
-dcc.RangeSlider(
-id='time-slider',
-min=MIN_TIME.timestamp(),
-max=MAX_TIME.timestamp(),
-value=[MIN_TIME.timestamp(), MAX_TIME.timestamp()],
-marks = get_marks(MIN_TIME, MAX_TIME)
-)
+})
 ,
 
     dcc.Graph(id='timeline2', figure={
