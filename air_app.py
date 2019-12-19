@@ -334,6 +334,7 @@ app = dash.Dash('Dashboards')
 app.layout = html.Div(className = 'layout', children = [
     html.H1(className = 'title', children = 'Air Pollution Dashboard'),
     html.H4('Air pollution levels in different cities', className='subtitle'),
+
     dcc.Graph(id='timeline3', figure={
         'data': [go.Scatter(x = table_v11.time,
                             y = table_v11.co,
@@ -347,6 +348,38 @@ app.layout = html.Div(className = 'layout', children = [
                 'paper_bgcolor': '#DCDCDC'
         }
 }),
+dcc.Graph(id='accidents_co_corr', figure = {
+'data' : [go.Scatter(ids = table12.index,
+x = table12.accident_num,
+y = table12.co,
+mode='markers',
+name = city2)
+for city2,table12 in table_non_forecast.groupby('city')],
+'layout': {
+'title': 'Covariance between number of accidents and CO pollution',
+'xaxis': {'title':'Number of traffic accidents'},
+'yaxis': {'title':'CO pollution'},
+'plot_bgcolor': '#DCDCDC',
+     'paper_bgcolor': '#DCDCDC'
+}
+}),
+
+dcc.Graph(id='windspeed_co_corr', figure = {
+'data' : [go.Scatter(ids = table12.index,
+x = table12.wind_speed,
+y = table12.co,
+mode='markers',
+name = city2)
+for city2,table12 in table_non_forecast.groupby('city')],
+'layout': {
+'title': 'Covariance between windspeed and CO pollution',
+'xaxis': {'title':'Windspeed'},
+'yaxis': {'title':'CO pollution'},
+'plot_bgcolor': '#DCDCDC',
+     'paper_bgcolor': '#DCDCDC'
+}
+}),
+
 dcc.RangeSlider(
 id='time-slider',
 min=MIN_TIME.timestamp(),
