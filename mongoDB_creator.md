@@ -4,10 +4,10 @@ docker exec -it some-mongo bash
 
 mongo
 
-use weather
+use air
 
 show collections
 
-db.air_pollution.find().pretty()
-db.weather.find().pretty()
-db.traffic.find().pretty()
+* db.air_pollution.find().pretty()
+* db.weather.find().pretty()
+* db.traffic.find().pretty()
