@@ -38,7 +38,7 @@ All the files we used to implement this project are available in our GitHub repo
   * Turn collections into Pandas dataframes (T)
   * Merge dataframes on **time** and **city** (T)
   * Pass the dataframes to the dashboard application file (L)
- 
+
 
 
 
@@ -48,6 +48,7 @@ All the files we used to implement this project are available in our GitHub repo
 
 All the files we used to implement this part of the project are also available in our GitHub repository. To replicate the results please use the following steps:
 
+0. Create Python environment with the necessary package versions: `pip install -r ./requirements.txt`
 1. Set up ETL process through a Python file: (first part of *air_app.py*)
   * Extract collections from our mongoDB database (E)
   * Turn collections into Pandas dataframes (T)
@@ -62,3 +63,6 @@ All the files we used to implement this part of the project are also available i
 5. Create the code for the dashboards as in the second part of the *air_app.py* file
 6. Create a separate script for running the dashboard (*server.py*)
 
+# Running the app
+1. Run `python server.py` from the terminal
+2. Navigate to `http://0.0.0.0:8050/` in a web browser

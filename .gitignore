@@ -2,8 +2,12 @@
 **/.DS_Store
 # Byte-compiled / optimized / DLL files
 __pycache__/
+**/__pycache__
+utils/__pycache__/
 *.py[cod]
 *$py.class
+
+air_app_venv/
 
 # C extensions
 *.so
