@@ -7,7 +7,6 @@ from dash.dependencies import Input, Output
 import chart_studio as py
 import pickle
 from dash_utils import add_row, lag_creators
-#import xgboost
 import pandas as pd
 
 from datetime import datetime
@@ -233,8 +232,8 @@ new_df = new_df.drop_duplicates(subset=['city', 'time'], keep='last')
 pred_table = new_df.copy()
 
 # Import model
-#filename = './xgb_model.sav'
-#xgb1 = pickle.load(open(filename, 'rb'))
+filename = './pred_model.sav'
+pred_model = pickle.load(open(filename, 'rb'))
 
 # Import columns for modelling
 filename = './model_cols.sav'
@@ -271,7 +270,8 @@ pred_table3 = lag_creators(8,'co',pred_table3)
 pred_table3 = lag_creators(8,'accident_num',pred_table3)
 pred_table3 = lag_creators(8,'wind_speed',pred_table3)
 
-pred_table3 = pred_table3.dropna()
+# pred_table3 = pred_table3.dropna()
+pred_table3 = pred_table3.fillna(0)
 
 pred_table4 = pred_table3[pred_table3.forecast==1]
 print(pred_table4)
@@ -290,7 +290,7 @@ pred_features = pred_features.apply(num_convert)
 print("Prediction table")
 print(pred_features)
 
-y_forecast = np.zeros(1000) #xgb1.predict(pred_features)
+y_forecast = pred_model.predict(pred_features)
 print(len(y_forecast))
 print(y_forecast)
 
