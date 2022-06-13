@@ -41,11 +41,8 @@ data = list(a.find())
 colnames = ['city','time','co', 'no2', 'o3', 'pm10', 'pm25', 'so2','w','p','t']
 
 for i in range(0,len(data)):
-    print("START")
-    print(i)
     values = []
     data2 = data[i]
-    print(data2)
 
     temp = data2['data']
 
@@ -75,10 +72,7 @@ for i in range(0,len(data)):
         air_pollution_df = air_pollution_df.append(temper)
 
 air_pollution_df.columns = colnames
-print("PANDAS")
-print(air_pollution_df)
 air_pollution_df['time'] = pd.to_datetime(air_pollution_df['time'], format = "%Y-%m-%d %H:%M:%S")
-print(type(air_pollution_df.time.iloc[0]))
 
 
 # WEATHER COLLECTION
@@ -95,7 +89,6 @@ lat_list=[]
 
 for i in range(0,len(data)):
     temp = data[i]
-    print(temp)
 
     values = []
 
@@ -105,7 +98,6 @@ for i in range(0,len(data)):
     lat_list.append(lat)
 
     temp2 = temp['main']
-    print(temp2)
 
     # Get city
     values.append(temp['name'])
@@ -137,7 +129,6 @@ for i in range(0,len(data)):
 
 
     values = np.array(values)
-    print(values)
     values = values.reshape(1,12)
     if i==0:
         weather_df = pd.DataFrame(values)
@@ -146,7 +137,6 @@ for i in range(0,len(data)):
         weather_df = weather_df.append(temper)
 
 weather_df.columns = colnames
-print("PANDAS")
 
 # Optimize time zones
 weather_df['time'] = pd.to_datetime(weather_df['time'], format = "%Y-%m-%d %H:%M:%S").dt.round('60min')
@@ -156,17 +146,12 @@ weather_df.loc[weather_df.city=='Beijing','time'] = weather_df.loc[weather_df.ci
 weather_df.loc[weather_df.city=='Tokyo','time'] = weather_df.loc[weather_df.city=='Tokyo','time']  + timedelta(hours=8)
 weather_df['time'] = weather_df['time']  - timedelta(hours=1) # To make it UTC+0 timezone
 
-print(type(weather_df.time.iloc[0]))
-print(weather_df)
-print(weather_df.shape)
-
 
 # TRAFFIC COLLECTION
 colnames = ['city', 'time','accidents']
 
 a=my_collection['traffic']
 data = list(a.find())
-print(data)
 
 colnames = ['city','time','accident_num']
 
@@ -194,7 +179,6 @@ for i in range(0,len(data)):
 
 traffic_df.columns = colnames
 
-print(traffic_df)
 
 # Datetime converted to closest hour
 traffic_df['time'] = pd.to_datetime(traffic_df['time'], format = "%Y-%m-%d %H:%M:%S").dt.round('60min')
@@ -203,21 +187,15 @@ traffic_df.loc[traffic_df.city=='Beijing','time'] = traffic_df.loc[traffic_df.ci
 traffic_df.loc[traffic_df.city=='Tokyo','time'] = traffic_df.loc[traffic_df.city=='Tokyo','time']  + timedelta(hours=8)
 traffic_df['time'] = traffic_df['time']  - timedelta(hours=1) # To make it UTC+0 timezone
 
-print(type(traffic_df.time.iloc[0]))
-print(traffic_df)
-
 ## Merge Datasets
 new_df = pd.merge(air_pollution_df, weather_df,  how='left', left_on=['city','time'], right_on = ['city','time'])
 new_df = pd.merge(new_df, traffic_df,  how='left', left_on=['city','time'], right_on = ['city','time'])
-print(new_df)
 
 # Import old data
 old_data = pd.read_csv('./modelling_dataset.csv',index_col=0)
-print(old_data.head())
 
 # Merge with new data
 new_df = old_data.append(new_df)
-print(new_df.head())
 
 
 # Save out modelling datasets
@@ -240,10 +218,12 @@ filename = './model_cols.sav'
 lag_cols = pickle.load(open(filename, 'rb'))
 
 pred_table2 = pred_table.copy()
-print(pred_table2.shape)
 
 pred_table2['time'] =  pd.to_datetime(pred_table2['time'], format='%Y-%m-%d %H:%M:%S')
 pred_table2 = pred_table2.reset_index(drop=True)
+
+# Filter for recent dates
+pred_table2 = pred_table2[pred_table2.time > pd.to_datetime('2021-12-31')]
 
 unique_city_names = pred_table2.city.nunique()
 lags = 8
@@ -263,7 +243,6 @@ def add_row(x,lags):
 
 
 pred_table2 = pred_table2.groupby('city').apply(add_row, lags=5).reset_index(drop=True)
-print(pred_table2.shape)
 
 pred_table3 = pred_table2.copy()
 pred_table3 = lag_creators(8,'co',pred_table3)
@@ -274,7 +253,6 @@ pred_table3 = lag_creators(8,'wind_speed',pred_table3)
 pred_table3 = pred_table3.fillna(0)
 
 pred_table4 = pred_table3[pred_table3.forecast==1]
-print(pred_table4)
 
 pred_features = pred_table4[lag_cols]
 
@@ -287,17 +265,11 @@ def num_convert(x):
 
 pred_features = pred_features.apply(num_convert)
 
-print("Prediction table")
-print(pred_features)
-
 y_forecast = pred_model.predict(pred_features)
-print(len(y_forecast))
-print(y_forecast)
 
 
 j=0
 forecast_col = pred_table3['forecast']
-print(type(forecast_col))
 for i in range(0,pred_table3.shape[0]):
     if forecast_col.iloc[i]==1:
         pred_table3.iloc[i,2]=y_forecast[j]
@@ -313,7 +285,6 @@ table_non_forecast['time'] =  pd.to_datetime(table_non_forecast['time'], format=
 
 ##################
 table = pred_table3.copy()
-print(table.head())
 
 MIN_TIME = min(table['time'])
 MAX_TIME = max(table['time'])
@@ -326,9 +297,7 @@ table_v1['co'] = pd.to_numeric(table_v1['co'],errors='coerce')
 table_v1['pm25'] = pd.to_numeric(table_v1['pm25'],errors='coerce')
 
 # Support table for world map
-print("Grouped table")
 temped_group_table = table_non_forecast.groupby(by='city').last()
-print(temped_group_table)
 
 app = dash.Dash('Dashboards')
 
@@ -339,9 +308,10 @@ app.layout = html.Div(className = 'layout', children = [
     dcc.Graph(id='timeline3', figure={
         'data': [go.Scatter(x = table_v11.time,
                             y = table_v11.co,
-                            name=city, marker=dict(size=12,
-        color=np.where(table_v11['forecast']==1, 'red', 'green'),
-    ))
+                            name=city,
+                            marker=dict(size=12,
+        color=np.where(table_v11['forecast']==1, 'red', 'green'),)
+    )
         for city,table_v11 in table_v1.groupby('city') ],
         'layout': {
         'title': 'CO levels in different cities',
