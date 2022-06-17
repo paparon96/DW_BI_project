@@ -1,4 +1,2 @@
-/usr/bin/docker run --name mongotest -t --net host 18435/awesome &&
-/usr/bin/docker stop mongotest &&
-/usr/bin/docker rm mongotest &&
+cd /home/ubuntu/DW_BI_project && /home/ubuntu/DW_BI_project/air_app_venv/bin/python air_api_data.py
 echo "done"

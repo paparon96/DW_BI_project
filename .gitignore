@@ -8,6 +8,7 @@ utils/__pycache__/
 *$py.class
 
 air_app_venv/
+nohup.out
 
 # C extensions
 *.so
