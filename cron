@@ -1,2 +1,2 @@
 MAILTO="aron.pap@barcelonagse.eu"
-25 * * * * /home/ubuntu/DW_BI_project/cron.sh >/dev/null 2>&1
+25 2 * * * /home/ubuntu/DW_BI_project/cron.sh >/dev/null 2>&1
